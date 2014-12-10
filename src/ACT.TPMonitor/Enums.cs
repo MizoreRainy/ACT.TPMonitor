@@ -21,7 +21,7 @@
     public enum JOB : byte
     {
         Unknown = 0x0,
-        GLD = 0x1,
+        GLA = 0x1,
         PGL = 0x2,
         MRD = 0x3,
         LNC = 0x4,
@@ -51,6 +51,14 @@
         SCH = 0x1C,
         ROG = 0x1D,
         NIN = 0x1E
+    }
+
+    public enum Role
+    {
+        TANK,
+        HEALER,
+        DPS,
+        OTHER
     }
 
     public enum Style

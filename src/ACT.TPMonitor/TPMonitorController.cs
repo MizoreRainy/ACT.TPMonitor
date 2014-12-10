@@ -4,10 +4,11 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
-using Advanced_Combat_Tracker;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using System.Linq;
+using Advanced_Combat_Tracker;
 
 namespace ACT.TPMonitor
 {
@@ -43,6 +44,7 @@ namespace ACT.TPMonitor
         public decimal AllianceY { get; set; }
         public bool IsUserScale { get; set; }
         public float UserScale { get; set; }
+        public bool IsShowName { get; set; }
 
         public SynchronizedCollection<Combatant> PartyMemberInfo { get; private set; }
         public SynchronizedCollection<JOB> HideJob { get; set; }
@@ -50,6 +52,7 @@ namespace ACT.TPMonitor
 
         private Regex regexCmd = new Regex(@"(?<Time>\[.+?\]) .{2}:.{4}:TP ((?<Num>\d):(?<Name>.*)|/(?<Command>.+))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private Regex regexDissolve = new Regex(@"(パーティ(を解散しま|が解散されま)した|のパーティから離脱しました)。", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private Regex regexBegun = new Regex(@"「.+?」の攻略を開始した。$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private Regex regexEnded = new Regex(@"「.+?」の攻略を終了した。$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private ACTTabpageControl actTab;
@@ -74,6 +77,7 @@ namespace ACT.TPMonitor
             ActGlobals.oFormActMain.OnLogLineRead += act_OnLogLineRead;
 
             isExited = false;
+            IsShowName = false;
 
             PartyMemberInfo = new SynchronizedCollection<Combatant>();
             for (int i = 0; i < 8; i++)
@@ -173,7 +177,7 @@ namespace ACT.TPMonitor
                     }
                     if (!oldFFXIVPlugin && IsFFXIVPluginStarted)
                     {
-                        if (FFXIVPluginHelper.GetVersion.CompareTo(SUPPORTED_VERSION) == -1)
+                        if (FFXIVPluginHelper.Version.CompareTo(SUPPORTED_VERSION) == -1)
                             IsUnSupportedVerion = true;
                         else
                             IsUnSupportedVerion = false;
@@ -199,19 +203,23 @@ namespace ACT.TPMonitor
                                 {
                                     case Language.English:
                                         regexDissolve = new Regex(@"(You (dissolve the|leave .+'s) party|The party has been disbanded)\.", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                                        regexBegun = new Regex(@".+ has begun\.$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
                                         regexEnded = new Regex(@".+ has ended\.$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
                                         break;
                                     case Language.German:
                                         regexDissolve = new Regex(@"((Deine|Die) Gruppe wurde aufgelöst|Du bist aus der Gruppe von .+ ausgetreten)\.", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                                        regexBegun = new Regex(@"„.+“ hat begonnen.$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
                                         regexEnded = new Regex(@"„.+“ wurde beendet\.$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
                                         break;
                                     case Language.French:
                                         regexDissolve = new Regex(@"(L'équipe (est|a été) dissoute|Vous quittez l'équipe de .+)\.", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                                        regexEnded = new Regex(@"La mission “.+” commence\.$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                                        regexBegun = new Regex(@"La mission “.+” commence\.$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                                        regexEnded = new Regex(@"La mission “.+” prend fin\.$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
                                         break;
                                     case Language.Japanese:
                                     default:
                                         regexDissolve = new Regex(@"(パーティ(を解散しま|が解散されま)した|のパーティから離脱しました)。", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                                        regexBegun = new Regex(@"「.+?」の攻略を開始した。$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
                                         regexEnded = new Regex(@"「.+?」の攻略を終了した。$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
                                         break;
                                 }
@@ -264,6 +272,8 @@ namespace ACT.TPMonitor
         {
             if (!isImport)
             {
+                Debug.WriteLine(logInfo.logLine);
+
                 if ((this.HideWhenDissolve && regexDissolve.IsMatch(logInfo.logLine)) ||
                     (this.HideWhenEnded && regexEnded.IsMatch(logInfo.logLine)))
                 {
@@ -277,6 +287,28 @@ namespace ACT.TPMonitor
                     // hide at dissolution.
                     viewer.Hide();
                     return;
+                }
+
+                if (regexBegun.IsMatch(logInfo.logLine))
+                {
+                    Util.SetPartySort(this.CharFolder);
+                    int partyCount = 0;
+                    List<Combatant> member = FFXIVPluginHelper.GePartyList(out partyCount);
+                    if (partyCount > 0)
+                    {
+                        for (int i = 0; i < partyCount; i++)
+                        {
+                            PartyMemberInfo[i] = member[i];
+                        }
+                        for (int i = partyCount; i < 8; i++)
+                        {
+                            PartyMemberInfo[i].Job = (int)JOB.Unknown;
+                            PartyMemberInfo[i].Name = string.Empty;
+                            PartyMemberInfo[i].CurrentTP = 0;
+                        }
+
+                        logInfo.logLine = "[00:00:00.000] 00:0000:TP /show";
+                    }
                 }
 
                 Match match = regexCmd.Match(logInfo.logLine);
@@ -323,16 +355,17 @@ namespace ACT.TPMonitor
                             case "hide":
                                 viewer.Hide();
                                 break;
+                            case "name":
+                                IsShowName = !IsShowName;
+                                break;
                             case "show":
+                                IsShowName = false;
                                 if (this.IsAllianceStyle)
                                     viewer = allianceStyle;
                                 else
                                     viewer = normalStyle;
 
-                                if (!viewer.Visible)
-                                {
-                                    this.PartyListUI = Util.GetPartyListLocation(this.CharFolder);
-                                }
+                                this.PartyListUI = Util.GetPartyListLocation(this.CharFolder);
                                 if (this.IsAllianceStyle)
                                     allianceStyle.Adjust();
                                 else
@@ -368,8 +401,10 @@ namespace ACT.TPMonitor
 
                 try
                 {
-                    List<Combatant> combatantList = FFXIVPluginHelper.GetCombatantList();
+                    var combatantList = FFXIVPluginHelper.GetCombatantList();
                     if (combatantList == null) continue;
+
+                    //combatantList.OrderBy(x => x.Order).ToList();
 
                     for (int i = 0; i < PartyMemberInfo.Count; i++)
                     {
@@ -377,7 +412,7 @@ namespace ACT.TPMonitor
                         {
                             break;
                         }
-
+                                                
                         PartyMemberInfo[0].Name = combatantList[0].Name;
                         PartyMemberInfo[0].CurrentTP = combatantList[0].CurrentTP;
 

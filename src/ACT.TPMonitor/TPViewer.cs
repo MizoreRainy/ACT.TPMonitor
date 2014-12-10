@@ -80,8 +80,12 @@ namespace ACT.TPMonitor
                         if (!string.IsNullOrEmpty(_controller.PartyMemberInfo[i].Name) &&
                             _controller.HideJob.IndexOf((JOB)_controller.PartyMemberInfo[i].Job) == -1)
                         {
-                            DrawBar(g, i, _controller.PartyMemberInfo[i].CurrentTP, _controller.IsUserScale ? _controller.UserScale : _controller.PartyListUI.Scale);
-                            DrawValue(g, i, _controller.PartyMemberInfo[i].CurrentTP, _controller.IsUserScale ? _controller.UserScale : _controller.PartyListUI.Scale);
+                            DrawBar(g, i, 
+                                _controller.PartyMemberInfo[i].CurrentTP, 
+                                _controller.IsUserScale ? _controller.UserScale : _controller.PartyListUI.Scale);
+                            DrawValue(g, i,
+                                _controller.IsShowName ? _controller.PartyMemberInfo[i].Name : _controller.PartyMemberInfo[i].CurrentTP.ToString(), 
+                                _controller.IsUserScale ? _controller.UserScale : _controller.PartyListUI.Scale);
                         }
                     }
                 }
@@ -130,7 +134,7 @@ namespace ACT.TPMonitor
             return brush;
         }
 
-        private void DrawValue(Graphics g, int idx, int value, float scale)
+        private void DrawValue(Graphics g, int idx, string value, float scale)
         {
             // レイアウト枠
             Rectangle rect = new Rectangle((int)(247 * scale), (int)(((40 * idx) + 60 + 8) * scale), (int)(100 * scale), (int)(8 * scale));
@@ -148,7 +152,7 @@ namespace ACT.TPMonitor
 
             // パスを作成
             GraphicsPath path = new GraphicsPath();
-            path.AddString(value.ToString(), f.FontFamily, (int)f.Style, f.Height * scale, rect, sf); // 文字列のパスを追加
+            path.AddString(value, f.FontFamily, (int)f.Style, f.Height * scale, rect, sf); // 文字列のパスを追加
 
             // フチを描く
             Pen p = new Pen(Color.FromArgb(0x46, 0x86, 0xa9), 1.0f * scale);

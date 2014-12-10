@@ -135,7 +135,7 @@ namespace ACT.TPMonitor
             this.checkBoxMNK = new System.Windows.Forms.CheckBox();
             this.checkBoxPGL = new System.Windows.Forms.CheckBox();
             this.checkBoxPLD = new System.Windows.Forms.CheckBox();
-            this.checkBoxGLD = new System.Windows.Forms.CheckBox();
+            this.checkBoxGLA = new System.Windows.Forms.CheckBox();
             this.imageListJobOff = new System.Windows.Forms.ImageList(this.components);
             this.textBoxColors = new System.Windows.Forms.TextBox();
             this.checkBoxAllianceStyle = new System.Windows.Forms.CheckBox();
@@ -911,7 +911,7 @@ namespace ACT.TPMonitor
             this.groupBoxDisplayJob.Controls.Add(this.checkBoxMNK);
             this.groupBoxDisplayJob.Controls.Add(this.checkBoxPGL);
             this.groupBoxDisplayJob.Controls.Add(this.checkBoxPLD);
-            this.groupBoxDisplayJob.Controls.Add(this.checkBoxGLD);
+            this.groupBoxDisplayJob.Controls.Add(this.checkBoxGLA);
             this.groupBoxDisplayJob.Location = new System.Drawing.Point(13, 196);
             this.groupBoxDisplayJob.Name = "groupBoxDisplayJob";
             this.groupBoxDisplayJob.Size = new System.Drawing.Size(590, 106);
@@ -1214,20 +1214,20 @@ namespace ACT.TPMonitor
             this.checkBoxPLD.UseVisualStyleBackColor = true;
             this.checkBoxPLD.CheckedChanged += new System.EventHandler(this.checkBoxJob_CheckedChanged);
             // 
-            // checkBoxGLD
+            // checkBoxGLA
             // 
-            this.checkBoxGLD.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBoxGLD.AutoSize = true;
-            this.checkBoxGLD.Checked = true;
-            this.checkBoxGLD.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxGLD.ImageIndex = 1;
-            this.checkBoxGLD.ImageList = this.imageListJob;
-            this.checkBoxGLD.Location = new System.Drawing.Point(6, 18);
-            this.checkBoxGLD.Name = "checkBoxGLD";
-            this.checkBoxGLD.Size = new System.Drawing.Size(38, 38);
-            this.checkBoxGLD.TabIndex = 0;
-            this.checkBoxGLD.UseVisualStyleBackColor = true;
-            this.checkBoxGLD.CheckedChanged += new System.EventHandler(this.checkBoxJob_CheckedChanged);
+            this.checkBoxGLA.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBoxGLA.AutoSize = true;
+            this.checkBoxGLA.Checked = true;
+            this.checkBoxGLA.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxGLA.ImageIndex = 1;
+            this.checkBoxGLA.ImageList = this.imageListJob;
+            this.checkBoxGLA.Location = new System.Drawing.Point(6, 18);
+            this.checkBoxGLA.Name = "checkBoxGLA";
+            this.checkBoxGLA.Size = new System.Drawing.Size(38, 38);
+            this.checkBoxGLA.TabIndex = 0;
+            this.checkBoxGLA.UseVisualStyleBackColor = true;
+            this.checkBoxGLA.CheckedChanged += new System.EventHandler(this.checkBoxJob_CheckedChanged);
             // 
             // imageListJobOff
             // 
@@ -1312,7 +1312,7 @@ namespace ACT.TPMonitor
             this.panelPlugin.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelPlugin.Location = new System.Drawing.Point(0, 0);
             this.panelPlugin.Name = "panelPlugin";
-            this.panelPlugin.Size = new System.Drawing.Size(953, 539);
+            this.panelPlugin.Size = new System.Drawing.Size(950, 539);
             this.panelPlugin.TabIndex = 12;
             // 
             // ACTTabpageControl
@@ -1370,7 +1370,7 @@ namespace ACT.TPMonitor
             textBoxCharacterFolder.Text = (Directory.GetDirectories(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"My Games\FINAL FANTASY XIV - A Realm Reborn")), @"FFXIV_*"))[0]; 
             comboBoxTPFont.Text = "PIRULEN";
 
-            checkBoxGLD.Tag = JOB.GLD;
+            checkBoxGLA.Tag = JOB.GLA;
             checkBoxPGL.Tag = JOB.PGL;
             checkBoxMRD.Tag = JOB.MRD;
             checkBoxLNC.Tag = JOB.LNC;
@@ -1437,7 +1437,7 @@ namespace ACT.TPMonitor
         private GroupBox groupBoxDisplayJob;
         private ImageList imageListJob;
         private ImageList imageListJobOff;
-        private CheckBox checkBoxGLD;
+        private CheckBox checkBoxGLA;
         private CheckBox checkBoxPGL;
         private CheckBox checkBoxMRD;
         private CheckBox checkBoxLNC;
@@ -1612,7 +1612,7 @@ namespace ACT.TPMonitor
             xmlSettings.AddControlSetting(checkBoxUserScale.Name, checkBoxUserScale);
             xmlSettings.AddControlSetting(numericUpDownUserScale.Name, numericUpDownUserScale);
 
-            xmlSettings.AddControlSetting(checkBoxGLD.Name, checkBoxGLD);
+            xmlSettings.AddControlSetting(checkBoxGLA.Name, checkBoxGLA);
             xmlSettings.AddControlSetting(checkBoxPGL.Name, checkBoxPGL);
             xmlSettings.AddControlSetting(checkBoxMRD.Name, checkBoxMRD);
             xmlSettings.AddControlSetting(checkBoxLNC.Name, checkBoxLNC);

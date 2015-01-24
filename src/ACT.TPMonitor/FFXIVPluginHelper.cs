@@ -418,9 +418,9 @@ namespace ACT.TPMonitor
                     return 10;
                 case JOB.DRG:
                     return 11;
-                case JOB.BRD:
-                    return 12;
                 case JOB.NIN:
+                    return 12;
+                case JOB.BRD:
                     return 13;
                 case JOB.BLM:
                     return 14;
@@ -438,14 +438,16 @@ namespace ACT.TPMonitor
                     return 32;
                 case JOB.LNC:
                     return 33;
-                case JOB.ARC:
+                case JOB.ROG:
                     return 34;
-                case JOB.THM:
+                case JOB.ARC:
                     return 35;
-                case JOB.ACN:
+                case JOB.THM:
                     return 36;
+                case JOB.ACN:
+                    return 37;
                 case JOB.CNJ:
-                    return 40;
+                    return 38;
                 default:
                     return 999;
             }

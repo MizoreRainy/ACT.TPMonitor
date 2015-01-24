@@ -149,6 +149,11 @@ namespace ACT.TPMonitor
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             g.SmoothingMode = SmoothingMode.HighQuality;
             Font f = _controller.TPFont;
+            int v;
+            if (!int.TryParse(value, out v))
+            {
+                f = new Font("Segoe UI", f.Size);
+            }
 
             // パスを作成
             GraphicsPath path = new GraphicsPath();

@@ -311,6 +311,11 @@ namespace ACT.TPMonitor
                     }
                 }
 
+                if (regexEnded.IsMatch(logInfo.logLine))
+                {
+                    logInfo.logLine = "[00:00:00.000] 00:0000:TP /hide";
+                }
+
                 Match match = regexCmd.Match(logInfo.logLine);
                 if (match.Success)
                 {
